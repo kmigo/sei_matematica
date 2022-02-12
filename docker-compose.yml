@@ -1,0 +1,69 @@
+version: "3"
+
+services:
+  nginx:
+    image: nginx:1.17.10
+    container_name: nginx
+    volumes:
+      - ./:/var/www
+      - ./default.conf:/etc/nginx/nginx.conf
+    ports:
+      - 80:80
+
+    depends_on:
+      - flask
+      - node
+      - flask_celery
+  
+  flask:
+    build:
+      context: ./app/
+      dockerfile: Dockerfile
+    container_name: flask
+    command: gunicorn "instance:create_app()" -t 10 -k gevent --bind 0.0.0.0:8000
+    volumes:
+      - ./:/var/wwww
+    ports:
+      - 8002:8000 
+  
+  flask_celery:
+    build:
+      context: ./flask_app
+      dockerfile: Dockerfile
+    environment:
+      - REDIS_URL=redis
+      - REDIS_PORT=6379
+      - MONGODB_HOST=mongodb
+      - MONGODB_PORT=27017
+    ports:
+      - "5000:5000"
+    depends_on:
+      - redis
+
+  simple_worker:
+    build:
+      context: ./simple_worker
+      dockerfile: Dockerfile
+    user: nobody
+    depends_on:
+      - redis
+      - flask_celery
+  redis:
+    image: 'redis:4-alpine'
+    ports:
+      - '6379:6379'
+
+  node:
+    build:
+      context: ./server/
+      dockerfile: Dockerfile
+    container_name: node
+    command: npm start
+    ports:
+      - 3001:3000
+    volumes:
+      - .:/usr/app
+
+  
+    
+   

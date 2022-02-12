@@ -1,0 +1,10 @@
+docker-compose up => Subir containers
+docker-compose down => Derrubar containers
+docker-compose ps => ver containers montados
+docker rmi $(docker images -a -q) => remover images decontainers
+sudo docker-compose -f docker-compose.yml up -d => Subir a força containers
+
+#sudo apt-get install psmisc
+sudo fuser 80/tcp => ver porta 80
+sudo lsof -t -i tcp:80 -s tcp:listen | sudo xargs kill => matar porta 80
+sudo docker system prune -a

@@ -11,10 +11,12 @@ def create_app():
         from PIL import Image
         import pytesseract
         import os 
-       
+        from stockfish import Stockfish
+        stock = Stockfish("/usr/games/stockfish")
         
         dirs = os.listdir()
         try:
+            
             res = pytesseract.image_to_string( Image.open('imagem-teste-com-ocr.jpeg'), lang='por')
             return str(res)
         except Exception as e:
